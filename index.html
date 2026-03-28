@@ -325,7 +325,46 @@
     nav { padding: 12px 16px; }
     .hero { padding: 100px 16px 60px; }
     .stats-section, .orbit-section, .detail-section { padding-left: 16px; padding-right: 16px; }
-  }
+  } 
+/* Arka plan ızgarasını hareketlendir */
+body::before {
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  from { background-position: 0 0; }
+  to { background-position: 40px 40px; }
+}
+
+/* Ekran üzerine siber tarama çizgileri ekle */
+body::after {
+  content: " ";
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* Başlık üzerine gelince siber parlama (Neon) */
+h1 span {
+  text-shadow: 0 0 10px rgba(55, 138, 221, 0.5);
+  transition: 0.3s;
+}
+
+h1:hover span {
+  text-shadow: 0 0 20px rgba(55, 138, 221, 0.8), 0 0 30px rgba(55, 138, 221, 0.4);
+}
+
+/* Kartların üzerine gelince mavi bir parlama ekle */
+.stat-card:hover {
+  box-shadow: 0 0 15px rgba(55, 138, 221, 0.1);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
 </style>
 </head>
 <body>
@@ -474,8 +513,9 @@ const sats = [
   {name:'RASAT',norad:37791,band:'LEO',alt:689,risk:0,op:'TÜBİTAK UZAY',tip:'Gözlem Uydusu',icon:'📡'},
   {name:'İMECE',norad:55491,band:'LEO',alt:680,risk:2,op:'ROKETSAN / TÜBİTAK',tip:'Gözlem Uydusu',icon:'🔭'},
 ];
-
+let activeSatIndex = -1; // Hangi uydunun seçili olduğunu tutar
 function selectSat(i) {
+activeSatIndex = i;
   document.querySelectorAll('.sat-item').forEach((r,j)=>{
     r.classList.toggle('active', j===i);
   });
@@ -613,13 +653,77 @@ function draw(){
   });
 
   t+=0.007;
+// SEÇİLİ UYDU HEDEFLEME (LOCK-ON) EFEKTİ
+  if (activeSatIndex !== -1) {
+    const s = sats[activeSatIndex];
+    const geoR = earthR * 3.2; 
+    const leoR = earthR * 1.85;
+    const r = s.band === 'GEO' ? geoR : leoR;
+    
+    // Uydunun anlık pozisyonunu hesapla
+    const bandSats = sats.filter(x => x.band === s.band);
+    const filterIdx = bandSats.indexOf(s);
+    const speed = s.band === 'GEO' ? 0.08 : 0.55;
+    const a = (filterIdx / bandSats.length) * Math.PI * 2 + t * speed;
+    const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+
+    // Radar Halkası
+    ctx.strokeStyle = s.risk > 0 ? '#E24B4A' : '#378ADD'; // Riskliyse kırmızı, değilse mavi
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, 15 + Math.sin(t * 5) * 5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Dünyadan Çizgi
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = 'rgba(55, 138, 221, 0.15)';
+    ctx.setLineDash([5, 5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
   requestAnimationFrame(draw);
+
 }
-draw();
+draw();function animateNumbers() {
+  const stats = document.querySelectorAll('.stat-val');
+  stats.forEach(stat => {
+    // Mevcut yazıyı al ve yüzde işaretini ayır
+    const originalText = stat.innerText;
+    const isPercentage = originalText.includes('%');
+    const target = parseInt(originalText.replace('%', ''));
+    
+    if (isNaN(target)) return;
+
+    let count = 0;
+    const duration = 1500; // Animasyon süresi (1.5 saniye)
+    const startTime = performance.now();
+
+    const updateCount = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Sayıyı hesapla
+      count = Math.floor(progress * target);
+      stat.innerText = count + (isPercentage ? '%' : '');
+
+      if (progress < 1) {
+        requestAnimationFrame(updateCount);
+      } else {
+        stat.innerText = originalText; // Tam değeri yaz
+      }
+    };
+
+    requestAnimationFrame(updateCount);
+  });
+}
+
+// Sayfa yüklendiğinde ve her yenilendiğinde çalıştır
+window.addEventListener('load', animateNumbers);
 </script>
 </body>
 </html>
-
 
 
 
