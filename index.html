@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BURSENAL — Yörünge Temizliği</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --bg2: #0d1520;
+    --bg3: #111c2e;
+    --border: rgba(55,138,221,0.15);
+    --border2: rgba(55,138,221,0.3);
+    --text: #e8f0f8;
+    --text2: #7a9ab8;
+    --blue: #378ADD;
+    --blue2: #85B7EB;
+    --green: #1D9E75;
+    --green2: #5DCAA5;
+    --red: #E24B4A;
+    --amber: #EF9F27;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(55,138,221,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(55,138,221,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    background: rgba(8,12,20,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; font-weight: 800; letter-spacing: 0.1em;
+    color: var(--text);
+  }
+  .nav-logo-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid var(--blue);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-logo-icon svg { width: 14px; height: 14px; }
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--green2);
+    background: rgba(29,158,117,0.1);
+    border: 0.5px solid rgba(29,158,117,0.3);
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green2);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 140px 32px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.15em;
+    color: var(--blue); text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block; width: 20px; height: 1px;
+    background: var(--blue);
+  }
+  h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  h1 span { color: var(--blue); }
+  .hero-sub {
+    font-size: 16px; color: var(--text2);
+    max-width: 520px; line-height: 1.7;
+    margin-bottom: 40px;
+  }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    padding: 12px 24px; border-radius: 6px;
+    border: none; cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: opacity 0.15s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text2);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    padding: 12px 24px; border-radius: 6px;
+    border: 0.5px solid var(--border2); cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: border-color 0.15s, color 0.15s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--blue); color: var(--blue2); }
+
+  /* STATS */
+  .stats-section {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 32px 80px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border2); }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.12em;
+    color: var(--text2); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .stat-val {
+    font-size: 36px; font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .stat-val.blue { color: var(--blue2); }
+  .stat-val.red { color: var(--red); }
+  .stat-val.green { color: var(--green2); }
+  .stat-val.amber { color: var(--amber); }
+
+  /* ORBIT SECTION */
+  .orbit-section {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 32px 80px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+  .orbit-canvas-wrap {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1.4;
+  }
+  canvas { width: 100%; height: 100%; display: block; }
+
+  .sat-panel {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .sat-panel-header {
+    padding: 16px 20px;
+    border-bottom: 0.5px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em;
+    color: var(--text2); text-transform: uppercase;
+  }
+  .sat-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sat-item:last-child { border-bottom: none; }
+  .sat-item:hover { background: var(--bg3); }
+  .sat-item.active { background: rgba(55,138,221,0.08); }
+  .sat-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .sat-dot.geo { background: var(--blue); }
+  .sat-dot.leo { background: var(--green); }
+  .sat-dot.risk { background: var(--red); animation: pulse 1s infinite; }
+  .sat-name {
+    font-size: 13px; font-weight: 600;
+    color: var(--text); flex: 1;
+  }
+  .sat-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; padding: 3px 8px;
+    border-radius: 4px; letter-spacing: 0.05em;
+  }
+  .sat-badge.geo { background: rgba(55,138,221,0.1); color: var(--blue2); border: 0.5px solid rgba(55,138,221,0.2); }
+  .sat-badge.leo { background: rgba(29,158,117,0.1); color: var(--green2); border: 0.5px solid rgba(29,158,117,0.2); }
+  .sat-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; margin-left: auto;
+  }
+  .sat-status.ok { color: var(--green2); }
+  .sat-status.warn { color: var(--amber); }
+  .sat-status.danger { color: var(--red); }
+
+  /* DETAIL */
+  .detail-section {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 32px 80px;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.15em;
+    color: var(--text2); text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 0.5px; background: var(--border);
+  }
+  .detail-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    display: none;
+  }
+  .detail-card.show { display: block; }
+  .detail-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .detail-icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .detail-title { font-size: 20px; font-weight: 800; }
+  .detail-sub { font-size: 12px; color: var(--text2); font-family: 'Space Mono', monospace; margin-top: 2px; }
+  .detail-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 20px;
+  }
+  .detail-item {
+    background: var(--bg3);
+    border: 0.5px solid var(--border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .detail-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; color: var(--text2);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .detail-val { font-size: 15px; font-weight: 700; }
+  .risk-bar-wrap { margin-top: 16px; }
+  .risk-bar-label {
+    display: flex; justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--text2);
+    margin-bottom: 8px;
+  }
+  .risk-bar {
+    height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+  .risk-fill {
+    height: 100%; border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 0.5px solid var(--border);
+    padding: 32px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--text2);
+  }
+  footer span { color: var(--blue2); }
+
+  @media (max-width: 768px) {
+    .stats-section { grid-template-columns: repeat(2,1fr); }
+    .orbit-section { grid-template-columns: 1fr; }
+    nav { padding: 12px 16px; }
+    .hero { padding: 100px 16px 60px; }
+    .stats-section, .orbit-section, .detail-section { padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="#378ADD" stroke-width="1.2"/>
+        <path d="M7 1.5v3M7 9.5v3M1.5 7h3M9.5 7h3" stroke="#378ADD" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="7" cy="7" r="1.5" fill="#378ADD"/>
+      </svg>
+    </div>
+    BURSENAL
+  </div>
+  <div class="live-badge">
+    <div class="pulse"></div>
+    CANLI İZLEME
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">Yörünge Temizliği Sistemi</div>
+  <h1>Türk Uydularını<br><span>Uzay Çöpünden</span><br>Koru</h1>
+  <p class="hero-sub">
+    8 Türk uydusunu gerçek zamanlı izleyen, SGP4 algoritmasıyla yörünge hesaplayan
+    ve olası çarpışma risklerini tespit eden yapay zeka destekli takip sistemi.
+  </p>
+  <div class="hero-btns">
+    <a href="#izleme" class="btn-primary">Canlı İzlemeyi Aç</a>
+    <a href="https://github.com/EgeKaya-code" class="btn-secondary" target="_blank">GitHub'da Gör →</a>
+  </div>
+</section>
+
+<section class="stats-section">
+  <div class="stat-card">
+    <div class="stat-label">İzlenen Uydu</div>
+    <div class="stat-val blue">8</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Çarpışma Adayı</div>
+    <div class="stat-val red">5</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Katalog Nesnesi</div>
+    <div class="stat-val green">96</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Model Doğruluğu</div>
+    <div class="stat-val amber">100%</div>
+  </div>
+</section>
+
+<section class="orbit-section" id="izleme">
+  <div class="orbit-canvas-wrap">
+    <canvas id="orbitCanvas"></canvas>
+  </div>
+
+  <div class="sat-panel">
+    <div class="sat-panel-header">Türk Uydu Filosu</div>
+    <div class="sat-item" onclick="selectSat(0)">
+      <div class="sat-dot geo"></div>
+      <div class="sat-name">Türksat 4A</div>
+      <div class="sat-badge geo">GEO</div>
+      <div class="sat-status ok">GÜVENLİ</div>
+    </div>
+    <div class="sat-item" onclick="selectSat(1)">
+      <div class="sat-dot geo"></div>
+      <div class="sat-name">Türksat 4B</div>
+      <div class="sat-badge geo">GEO</div>
+      <div class="sat-status ok">GÜVENLİ</div>
+    </div>
+    <div class="sat-item" onclick="selectSat(2)">
+      <div class="sat-dot geo"></div>
+      <div class="sat-name">Türksat 5A</div>
+      <div class="sat-badge geo">GEO</div>
+      <div class="sat-status ok">GÜVENLİ</div>
+    </div>
+    <div class="sat-item" onclick="selectSat(3)">
+      <div class="sat-dot geo"></div>
+      <div class="sat-name">Türksat 5B</div>
+      <div class="sat-badge geo">GEO</div>
+      <div class="sat-status ok">GÜVENLİ</div>
+    </div>
+    <div class="sat-item" onclick="selectSat(4)">
+      <div class="sat-dot risk"></div>
+      <div class="sat-name">Göktürk-1</div>
+      <div class="sat-badge leo">LEO</div>
+      <div class="sat-status danger">⚠ 1 ADAY</div>
+    </div>
+    <div class="sat-item" onclick="selectSat(5)">
+      <div class="sat-dot risk"></div>
+      <div class="sat-name">Göktürk-2</div>
+      <div class="sat-badge leo">LEO</div>
+      <div class="sat-status warn">⚠ 2 ADAY</div>
+    </div>
+    <div class="sat-item" onclick="selectSat(6)">
+      <div class="sat-dot leo"></div>
+      <div class="sat-name">RASAT</div>
+      <div class="sat-badge leo">LEO</div>
+      <div class="sat-status ok">GÜVENLİ</div>
+    </div>
+    <div class="sat-item" onclick="selectSat(7)">
+      <div class="sat-dot risk"></div>
+      <div class="sat-name">İMECE</div>
+      <div class="sat-badge leo">LEO</div>
+      <div class="sat-status danger">⚠ 2 ADAY</div>
+    </div>
+  </div>
+</section>
+
+<section class="detail-section">
+  <div class="section-label">Uydu Detayı</div>
+  <div class="detail-card" id="detailCard">
+    <div class="detail-header">
+      <div class="detail-icon" id="detailIcon"></div>
+      <div>
+        <div class="detail-title" id="detailTitle"></div>
+        <div class="detail-sub" id="detailSub"></div>
+      </div>
+    </div>
+    <div class="detail-grid" id="detailGrid"></div>
+    <div class="risk-bar-wrap">
+      <div class="risk-bar-label">
+        <span>Risk Seviyesi</span>
+        <span id="riskLabel"></span>
+      </div>
+      <div class="risk-bar"><div class="risk-fill" id="riskFill"></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Bursa Hackathon 2026 · <span>BURSENAL</span> · Yörünge Temizliği Projesi ·
+  <a href="https://github.com/EgeKaya-code" style="color:#378ADD">EgeKaya-code</a>
+</footer>
+
+<script>
+const sats = [
+  {name:'Türksat 4A',norad:39522,band:'GEO',alt:35786,risk:0,op:'Türksat A.Ş.',tip:'İletişim Uydusu',icon:'🛰️'},
+  {name:'Türksat 4B',norad:40985,band:'GEO',alt:35786,risk:0,op:'Türksat A.Ş.',tip:'İletişim Uydusu',icon:'🛰️'},
+  {name:'Türksat 5A',norad:47790,band:'GEO',alt:35786,risk:0,op:'Türksat A.Ş.',tip:'İletişim Uydusu',icon:'🛰️'},
+  {name:'Türksat 5B',norad:49077,band:'GEO',alt:35786,risk:0,op:'Türksat A.Ş.',tip:'İletişim Uydusu',icon:'🛰️'},
+  {name:'Göktürk-1',norad:41875,band:'LEO',alt:681,risk:1,op:'Milli Savunma Bakanlığı',tip:'Gözlem Uydusu',icon:'👁️'},
+  {name:'Göktürk-2',norad:38704,band:'LEO',alt:686,risk:2,op:'TÜBİTAK UZAY',tip:'Gözlem Uydusu',icon:'👁️'},
+  {name:'RASAT',norad:37791,band:'LEO',alt:689,risk:0,op:'TÜBİTAK UZAY',tip:'Gözlem Uydusu',icon:'📡'},
+  {name:'İMECE',norad:55491,band:'LEO',alt:680,risk:2,op:'ROKETSAN / TÜBİTAK',tip:'Gözlem Uydusu',icon:'🔭'},
+];
+
+function selectSat(i) {
+  document.querySelectorAll('.sat-item').forEach((r,j)=>{
+    r.classList.toggle('active', j===i);
+  });
+  const s = sats[i];
+  const pct = s.risk===0?4:s.risk===1?42:78;
+  const col = s.risk===0?'#1D9E75':s.risk===1?'#EF9F27':'#E24B4A';
+  const lbl = s.risk===0?'DÜŞÜK RİSK':s.risk===1?'ORTA RİSK':'YÜKSEK RİSK';
+  document.getElementById('detailIcon').textContent = s.icon;
+  document.getElementById('detailIcon').style.background = s.risk===0?'rgba(29,158,117,0.1)':s.risk===1?'rgba(239,159,39,0.1)':'rgba(226,75,74,0.1)';
+  document.getElementById('detailTitle').textContent = s.name;
+  document.getElementById('detailSub').textContent = 'NORAD ' + s.norad + ' · ' + s.tip;
+  document.getElementById('detailGrid').innerHTML = `
+    <div class="detail-item"><div class="detail-key">Operatör</div><div class="detail-val" style="font-size:13px">${s.op}</div></div>
+    <div class="detail-item"><div class="detail-key">Yükseklik</div><div class="detail-val">${s.alt.toLocaleString()} km</div></div>
+    <div class="detail-item"><div class="detail-key">Orbital Bant</div><div class="detail-val" style="color:${s.band==='GEO'?'#85B7EB':'#5DCAA5'}">${s.band}</div></div>
+    <div class="detail-item"><div class="detail-key">Çarpışma Adayı</div><div class="detail-val" style="color:${col}">${s.risk} nesne</div></div>
+    <div class="detail-item"><div class="detail-key">Tarama Eşiği</div><div class="detail-val">${s.band==='GEO'?'200':'50'} km</div></div>
+    <div class="detail-item"><div class="detail-key">Durum</div><div class="detail-val" style="color:${col};font-size:12px">${lbl}</div></div>
+  `;
+  document.getElementById('riskLabel').textContent = lbl;
+  document.getElementById('riskLabel').style.color = col;
+  document.getElementById('riskFill').style.width = pct+'%';
+  document.getElementById('riskFill').style.background = col;
+  document.getElementById('detailCard').classList.add('show');
+  document.getElementById('detailCard').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// Canvas orbit animation
+const canvas = document.getElementById('orbitCanvas');
+const ctx = canvas.getContext('2d');
+let W,H,cx,cy,t=0;
+function resize(){
+  const rect = canvas.parentElement.getBoundingClientRect();
+  W = rect.width; H = rect.height;
+  canvas.width = W; canvas.height = H;
+  cx=W/2; cy=H/2;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const earthR = Math.min(W,H)*0.16;
+
+  // Stars
+  if(!draw.stars){
+    draw.stars=[];
+    for(let i=0;i<80;i++){
+      draw.stars.push({x:Math.random()*2000,y:Math.random()*2000,r:Math.random()*1.2+0.3,o:Math.random()*0.6+0.2});
+    }
+  }
+  draw.stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x%W,s.y%H,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(232,240,248,${s.o})`;
+    ctx.fill();
+  });
+
+  // Earth glow
+  const grd = ctx.createRadialGradient(cx,cy,earthR*0.5,cx,cy,earthR*2.5);
+  grd.addColorStop(0,'rgba(55,138,221,0.12)');
+  grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd;
+  ctx.beginPath();
+  ctx.arc(cx,cy,earthR*2.5,0,Math.PI*2);
+  ctx.fill();
+
+  // Earth
+  ctx.beginPath();
+  ctx.arc(cx,cy,earthR,0,Math.PI*2);
+  ctx.fillStyle='#0d1e35';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx,cy,earthR,0,Math.PI*2);
+  ctx.strokeStyle='#378ADD';
+  ctx.lineWidth=1.5;
+  ctx.stroke();
+  ctx.fillStyle='#378ADD';
+  ctx.font=`bold ${earthR*0.28}px 'Space Mono',monospace`;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('TR',cx,cy);
+
+  // Orbit rings
+  const geoR=earthR*3.2, leoR=earthR*1.85;
+  [geoR,leoR].forEach((r,i)=>{
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle=i===0?'rgba(55,138,221,0.18)':'rgba(29,158,117,0.18)';
+    ctx.lineWidth=0.5;
+    ctx.setLineDash([5,5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Debris
+  for(let i=0;i<25;i++){
+    const a=(i/25)*Math.PI*2+t*0.25*(i%3===0?1:-1);
+    const r=leoR+(i%6-3)*10;
+    ctx.beginPath();
+    ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,1.5,0,Math.PI*2);
+    ctx.fillStyle='rgba(122,154,184,0.45)';
+    ctx.fill();
+  }
+
+  // GEO sats
+  sats.filter(s=>s.band==='GEO').forEach((s,i,arr)=>{
+    const a=(i/arr.length)*Math.PI*2+t*0.08;
+    const x=cx+Math.cos(a)*geoR, y=cy+Math.sin(a)*geoR;
+    ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2);
+    ctx.fillStyle='#378ADD'; ctx.fill();
+    ctx.fillStyle='#85B7EB';
+    ctx.font="8px 'Space Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(s.name.split(' ')[1],x,y-7);
+  });
+
+  // LEO sats
+  sats.filter(s=>s.band==='LEO').forEach((s,i,arr)=>{
+    const a=(i/arr.length)*Math.PI*2+t*0.55;
+    const x=cx+Math.cos(a)*leoR, y=cy+Math.sin(a)*leoR;
+    const col=s.risk>0?'#E24B4A':'#1D9E75';
+    if(s.risk>0){
+      ctx.beginPath();
+      ctx.arc(x,y,8+Math.sin(t*4)*2.5,0,Math.PI*2);
+      ctx.strokeStyle=col; ctx.lineWidth=0.8;
+      ctx.globalAlpha=0.35; ctx.stroke(); ctx.globalAlpha=1;
+    }
+    ctx.beginPath(); ctx.arc(x,y,4.5,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.fillStyle=s.risk>0?'#F09595':'#5DCAA5';
+    ctx.font="8px 'Space Mono',monospace";
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(s.name.split('-')[0],x,y-8);
+  });
+
+  t+=0.007;
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
